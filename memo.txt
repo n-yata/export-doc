@@ -1,0 +1,58 @@
+◆コストの話
+
+
+✅ Amazon SNSの料金ページ（公式）
+🔗 https://aws.amazon.com/jp/sns/pricing/
+
+ポイント
+プッシュ通知：0.50USD/100万件
+Eメール通知（SNS経由）：0.10USD/1000件
+
+✅ Amazon SESの料金ページ（公式）
+🔗 https://aws.amazon.com/jp/ses/pricing/
+
+ポイント
+Eメール送信：0.10USD/1000件（外部から送信の場合）
+データ転送や受信メールにも別途料金あり（今回不要）
+
+✅ Amazon EventBridgeの料金ページ（公式）
+🔗 https://aws.amazon.com/jp/eventbridge/pricing/
+
+ポイント
+スケジュール実行：0.10USD/100万件
+ルール作成や維持自体は無料
+
+✅ Amazon Pinpointの料金ページ（公式）
+🔗 https://aws.amazon.com/jp/pinpoint/pricing/
+
+ポイント（470万件送る場合）
+MAU課金：
+最初の50万MAU	0.0015USD/MAU = 750USD
+次の50万MAU	0.0012USD/MAU = 600USD
+370万MAU	0.0008USD/MAU = 2960USD
+合計	4310USD（＋送信料金2.35USD）
+総額	4312.35USD（プッシュ通知1回分）
+
+◆SNSの場合
+SNS：
+470万 ÷ 100万 × 0.5USD = 2.35USD
+EventBridge：
+スケジュール実行	0.1USD / 100万回	4700回	0.00047USD
+Lambda：
+1件あたり処理時間	0.25秒（SNS＋DynamoDB）
+1000件	250秒（約4分10秒）
+課金単位	100msごと（=0.1秒）
+課金対象時間（1回あたり）	2500課金単位（250秒）
+
+親Lambda（0.5GBメモリ/1分実行）	約0.000000833USD/100ms	60秒×10単位	約0.0005USD
+子Lambda（0.5GBメモリ/4分10秒）	約0.000000833USD/100ms	2500×4700回	約9.8USD
+
+項目	コスト（USD）
+SNS Direct Publish	2.35
+EventBridgeスケジュール実行	0.00047
+親Lambda（分割＆登録）	0.0005
+子Lambda（通知＆DynamoDB登録）	約9.8
+合計	約12.15USD
+
+◆クォータのポイント
+EventBridgeのPutRules, PutTargets
